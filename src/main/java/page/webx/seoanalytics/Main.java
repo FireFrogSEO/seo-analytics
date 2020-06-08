@@ -28,10 +28,10 @@ public class Main {
         Config.setGoogleApiKey(s);
 
         System.out.println("Теперь ID вашего Custom Search Engine" + "\n" +
-                "Его можно получить в консоли CSE. Вы можете ввести \"консоль\", чтобы открыть ее в браузере, установленном по умолчанию");
+                "Его можно получить в консоли CSE. Вы можете ввести \"console\", чтобы открыть ее в браузере, установленном по умолчанию");
 
         s = br.readLine();
-        if (s.equalsIgnoreCase("консоль")) {
+        if (s.equalsIgnoreCase("console")) {
             desktop.browse(java.net.URI.create("https://cse.google.com/cse/all"));
             System.out.println("После нахождения Search Engine ID введите его здесь");
             Config.setSeId(br.readLine());
@@ -56,7 +56,7 @@ public class Main {
         Config.setDbUser(up[0]);
         Config.setDbPass(up[1]);
 
-        System.out.println("Пробую создать базу данных и подготовить ее к работе" +
+        System.out.println("Создаю базу данных и готовлю ее к работе" +
                 "\n" +
                 "Ожидайте строку с подтверждением");
 
@@ -82,6 +82,7 @@ public class Main {
 
                 System.out.println("В базу успешно записан " + result.getLink() + ", с позиции в выдаче номер " + position + ".");
                 position++;
+                if (position == 20 || position > 20) {System.out.println("Теперь можно ввести следующий запрос");};
             }
         }
 

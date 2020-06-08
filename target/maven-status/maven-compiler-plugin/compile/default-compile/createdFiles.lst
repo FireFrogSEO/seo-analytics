@@ -1,0 +1,6 @@
+page\webx\seoanalytics\Main.class
+page\webx\seoanalytics\searchWorker.class
+page\webx\seoanalytics\dbWorker.class
+page\webx\seoanalytics\searchWorker$1.class
+page\webx\seoanalytics\serpstatWorker.class
+page\webx\seoanalytics\Config.class

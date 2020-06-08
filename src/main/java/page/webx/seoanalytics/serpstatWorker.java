@@ -30,7 +30,7 @@ public class serpstatWorker {
 
     JSONObject subQuery = new JSONObject();
         subQuery.put("query", query); //исследуемый домен
-        System.out.println(query);
+     //   System.out.println(query);
         serpstatQuery.put("params", subQuery); //совмещаем все вместе
 
     String jsonStr = serpstatQuery.toString();
@@ -53,10 +53,10 @@ public class serpstatWorker {
         if (entity != null) {
         try (InputStream instream = entity.getContent()) {
             String result = convertInputStreamToString(instream); //конвертируем полученный ответ в удобную строку
-            System.out.println(result);
+           // System.out.println(result);
             try {
                 dbWorker.setSerpstatResults(parseResults(result), query); //записываем все в базу
-                System.out.println("В базу записаны данные по " + query);
+              //  System.out.println("В базу записаны данные по " + query);
                 Thread.sleep(1000*2); //чтобы не было превышения лимитов, ждем 2сек
             } catch (Exception e) {
                 System.out.println("Ошибка в парсинге результатов серпстата, скорее всего неподдерживаемый домен");

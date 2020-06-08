@@ -152,7 +152,7 @@ public class dbWorker {
 
         String totalQuery = insert1 + insert2 + "\"" + link +  "\"" + ")";
 
-        System.out.println(totalQuery);
+       // System.out.println(totalQuery);
 
         PreparedStatement ps=conn.prepareStatement(totalQuery);
 
