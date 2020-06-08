@@ -1,3 +1,5 @@
+package page.webx.seoanalytics;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,7 +19,7 @@ public class dbWorker {
 
         try {
             connection = DriverManager
-                    .getConnection("","","");
+                    .getConnection("jdbc:mysql://" + Config.getDbUrl()+ "/?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Kiev", Config.getDbUser(), Config.getDbPass());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -34,10 +36,10 @@ public class dbWorker {
 
         Connection conn = createConnection();
 
-    String createDB = "create database if not exists results;";
+    String createDB = "create database if not exists " + Config.getDbName() + ";";
   //  String useDB = "use results;";
 
-        conn.setCatalog("results");
+        conn.setCatalog(Config.getDbName());
 
     String createGoogleResults = "CREATE TABLE IF NOT EXISTS google_results ( " +
             "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -106,8 +108,6 @@ public class dbWorker {
 
         Statement stat = conn.createStatement();
         stat.executeUpdate(createDB);
-     //   stat.executeUpdate(useDB);
-      //  conn.setCatalog("result");
         stat.executeUpdate(createGoogleResults);
         stat.executeUpdate(createSerpstatResults);
 
@@ -117,7 +117,7 @@ public class dbWorker {
 
     protected static void setGoogleResults(String keyword, String link, String displayLink, String title, int position) throws SQLException {
         Connection conn = createConnection();
-        conn.setCatalog("results");
+        conn.setCatalog(Config.getDbName());
         PreparedStatement insert = conn.prepareStatement(
                 "INSERT INTO google_results (keyword, link, displayLink, title, position) " + "VALUES (?, ?, ?, ?, ?)");
 
@@ -139,8 +139,7 @@ public class dbWorker {
 
     protected static void setSerpstatResults(HashMap<String, String> serpResults, String link) throws SQLException {
         Connection conn = createConnection();
-        conn.setCatalog("results");
-//INSERT INTO serpstat_results (link, domainRank, delfn) values (
+        conn.setCatalog(Config.getDbName());
         String insert1 ="INSERT INTO serpstat_results (id, "; //50 values excepting link and rank
         String insert2 = "link) values (" + "\"" + dbWorker.getMaxIdGoogleResults() + "\""  + ", ";
         Iterator it = serpResults.entrySet().iterator();
@@ -148,7 +147,7 @@ public class dbWorker {
             Map.Entry pair = (Map.Entry)it.next();
             insert1 += pair.getKey() + ", ";
             insert2 += "\"" + pair.getValue() +  "\"" + ", ";
-            it.remove(); // avoids a ConcurrentModificationException
+            it.remove();
         }
 
         String totalQuery = insert1 + insert2 + "\"" + link +  "\"" + ")";
@@ -168,15 +167,11 @@ public class dbWorker {
 
     }
 
-    protected static void setSerpstatResults(int maxId) throws SQLException { //перегруженный метод, чтобы не терялся порядок в id
-
-    }
-
     private static int getMaxIdGoogleResults() throws SQLException {
         int id = 0;
 
         Connection conn = createConnection();
-        conn.setCatalog("results");
+        conn.setCatalog(Config.getDbName());
 
         try {
             String query = "select id from google_results where  id = (select max(id) from google_results)";
@@ -198,18 +193,5 @@ public class dbWorker {
 
         return id;
     }
-
-    /*public static void setTest() throws SQLException {
-        Connection conn = createConnection();
-        conn.setCatalog("results");
-
-        int position = 0;
-        try {
-            String googleQuery = "INSERT INTO google_results (keyword, link, displayLink, title, position) " + "VALUES (keyword, link, displayLink, title," + position + ")";
-            String serpstatQuery = "INSERT INTO serpstat_results (id, referringIps, domainZoneGov, typeImg, vkLinks, typeRedirectDynamics, trustRankDynamics, vkLinksDynamics, mainPageLinksDynamics, facebookLinks, referringSubDomainsDynamics, typeAlt, linkedinLinksDynamics, mainPageLinks, referringDomains, typeText, outlinksUniqueDynamics, doFollowLinksDynamics, noFollowLinksDynamics, outlinksUnique, doFollowLinks, linkedinLinks, domainRank, referringDomainsDynamics, threatsDynamics, noFollowLinks, typeImgDynamics, domainZoneEdu, pinterestLinksDynamics, threats, typeAltDynamics, referringSubDomains, referringIpsDynamics, outlinksTotal, totalIndexedDynamics, totalIndexed, typeRedirect, typeTextDynamics, domainZoneGovDynamics, externalDomains, referringSubnets, trustRank, facebookLinksDynamics, referringSubnetsDynamics, citationRankDynamics, referringLinks, citationRank, pinterestLinks, referringLinksDynamics, externalDomainsDynamics, domainZoneEduDynamics, outlinksTotalDynamics, link) values (" + getMaxIdGoogleResults() + ", \"31\", \"0\", \"2\", \"0\", \"1000\", \"0\", \"0\", \"-1\", \"0\", \"0\", \"0\", \"0\", \"7\", \"41\", \"2000\", \"0\", \"2000\", \"0\", \"0\", \"5000\", \"0\", \"0\", \"0\", \"0\", \"385\", \"0\", \"0\", \"0\", \"0\", \"0\", \"8\", \"0\", \"0\", \"0\", \"0\", \"4772\", \"9\", \"0\", \"0\", \"40\", \"0\", \"0\", \"0\", \"0\", \"4658\", \"0\", \"0\", \"5\", \"0\", \"0\", \"0\", \"link\")";
-        } catch(Exception e) {
-
-        }
-        */
 }
 

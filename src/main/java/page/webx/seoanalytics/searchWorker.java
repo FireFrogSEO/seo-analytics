@@ -1,3 +1,5 @@
+package page.webx.seoanalytics;
+
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -10,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class searchWorker {
-    private static final int HTTP_REQUEST_TIMEOUT = 3 * 300000;
-    private static final String API_KEY = "";
-    private static final String SE_ID = "";
+    private static final int HTTP_REQUEST_TIMEOUT = 3 * 300000; //сколько ждем ответа
+    private static final String API_KEY = Config.getGoogleApiKey(); //устанавливаем апи ключ
+    private static final String SE_ID = Config.getSeId(); //устанавливаем search engine id
 
     public static List<Result> search(String keyword) {
         Customsearch customsearch = null;
@@ -22,10 +24,8 @@ public class searchWorker {
             customsearch = new Customsearch(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
                 public void initialize(HttpRequest httpRequest) {
                     try {
-                        // set connect and read timeouts
                         httpRequest.setConnectTimeout(HTTP_REQUEST_TIMEOUT);
                         httpRequest.setReadTimeout(HTTP_REQUEST_TIMEOUT);
-
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -41,7 +41,7 @@ public class searchWorker {
             Customsearch.Cse.List list = customsearch.cse().list(keyword);
             list.setKey(API_KEY);
             list.setCx(SE_ID);
-            for(long i = 0 ; i < 20 ; i+=10) {
+            for(long i = 0 ; i < 20 ; i+=10) { //записываем ответ в массив
                    list.setStart(i);
                 Search results = list.execute();
                 resultList = results.getItems();
@@ -50,6 +50,6 @@ public class searchWorker {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return totalResults;
+        return totalResults; //возвращаем получившийся массив для дальнейшей работы
     }
 }
