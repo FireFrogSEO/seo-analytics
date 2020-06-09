@@ -1,0 +1,91 @@
+install.packages('RMySQL')
+library(RMySQL)
+#пишем запрос
+#gr - google_results, sr - serpstat_results
+#обратите внимание, что для избежания дублирования столбцов нужно явно
+#указать какие столбцы из serpstat_results берем в работу
+Query <- "
+    select
+  gr.*,
+    sr.referringDomains,
+    sr.referringSubDomains,
+    sr.referringLinks,
+    sr.totalIndexed,
+    sr.externalDomains,
+    sr.noFollowLinks,
+    sr.doFollowLinks,
+    sr.referringIps,
+    sr.referringSubnets,
+    sr.trustRank,
+    sr.citationRank,
+    sr.domainZoneEdu,
+    sr.domainZoneGov,
+    sr.outlinksTotal,
+    sr.outlinksUnique,
+    sr.facebookLinks,
+    sr.pinterestLinks,
+    sr.linkedinLinks,
+    sr.vkLinks,
+    sr.typeText,
+    sr.typeImg,
+    sr.typeRedirect,
+    sr.typeAlt,
+    sr.referringDomainsDynamics,
+    sr.referringSubDomainsDynamics,
+    sr.referringLinksDynamics,
+    sr.totalIndexedDynamics,
+    sr.externalDomainsDynamics,
+    sr.noFollowLinksDynamics,
+    sr.doFollowLinksDynamics,
+    sr.referringIpsDynamics,
+    sr.referringSubnetsDynamics,
+    sr.trustRankDynamics,
+    sr.citationRankDynamics,
+    sr.domainZoneEduDynamics,
+    sr.domainZoneGovDynamics,
+    sr.outlinksTotalDynamics,
+    sr.outlinksUniqueDynamics,
+    sr.facebookLinksDynamics,
+    sr.pinterestLinksDynamics,
+    sr.linkedinLinksDynamics,
+    sr.vkLinksDynamics,
+    sr.typeTextDynamics,
+    sr.typeImgDynamics,
+    sr.typeRedirectDynamics,
+    sr.typeAltDynamics,
+    sr.threats,
+    sr.threatsDynamics,
+    sr.mainPageLinks,
+    sr.mainPageLinksDynamics,
+    sr.domainRank
+from google_results gr  join serpstat_results sr on gr.id = sr.id
+;
+"
+# Чтобы запрос выполнился, нужно соединиться с той же БД, в которой хранятся результаты
+# Замените USER_NAME вашим пользователем БД
+# Замените PASSWORD паролем указанного пользователя
+# Замените MY_DB с названием БД (указывали в основной программе при ее инициализации)
+#Здесь и далее подразумевается наличие БД на localhost
+Conn <- dbConnect(dbDriver("MySQL"), user = "USER_NAME", password = "PASSWORD", dbname = "MY_DB")
+# Делаем непосредственно запрос и сохраняем получившийся результат
+Results <- dbGetQuery(Conn, Query)
+# Отключаемся от БД
+dbDisconnect(Conn)
+
+
+###next one
+
+
+summary(Results$totalIndexed)
+quantile(Results$totalIndexed,  probs = c(1, 10, 25, 50, 75, 95, 99, 100)/100)
+
+
+#create dataframe
+install.packages("ggplot2")
+install.packages("plotly")
+df <- as.data.frame(Results)
+
+#первый график со столбцами, количество входящихссылок на домен в зависимости от позиции
+library(plotly)
+pg <- plot_ly(df, x = ~position, y = ~referringLinks, type = 'bar')
+pg
