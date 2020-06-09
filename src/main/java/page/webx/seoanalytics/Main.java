@@ -66,23 +66,30 @@ public class Main {
         System.out.println("Теперь вводите ключевые слова для анализа по очереди или exit для завершения работы программы");
 
 
-        while (s != "exit") {
+        while (true) {
             List<Result> results = new ArrayList<>();
 
             s = br.readLine();
-            try {
-                results = searchWorker.search(s);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            int position = 1;
-            for (Result result : results) {
-                dbWorker.setGoogleResults(s, result.getLink(), result.getDisplayLink(), result.getTitle(), position);
-                serpstatWorker.serpstatQuery(result.getDisplayLink());
+            if (s.equalsIgnoreCase("exit")) {
+                break;
+            } else {
+                try {
+                    results = searchWorker.search(s);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                int position = 1;
+                for (Result result : results) {
+                    dbWorker.setGoogleResults(s, result.getLink(), result.getDisplayLink(), result.getTitle(), position);
+                    serpstatWorker.serpstatQuery(result.getDisplayLink());
 
-                System.out.println("В базу успешно записан " + result.getLink() + ", с позиции в выдаче номер " + position + ".");
-                position++;
-                if (position == 20 || position > 20) {System.out.println("Теперь можно ввести следующий запрос");};
+                    System.out.println("В базу успешно записан " + result.getLink() + ", с позиции в выдаче номер " + position + ".");
+                    position++;
+                    if (position == 20 || position > 20) {
+                        System.out.println("Теперь можно ввести следующий запрос");
+                    }
+                    ;
+                }
             }
         }
 
